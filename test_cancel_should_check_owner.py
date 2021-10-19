@@ -33,13 +33,9 @@ def test_should_check_owner_when_cancel_called():
         result = contract.cancel(5).interpret(storage=result.storage, sender=new_sender)
     assert 'Only the owner can cancel the swap' in str(err)
 
-def test_should_check_token_id_when_list_called():
+def test_should_check_amount_when_accept_called():
     contract, result = assert_list_result()
-    new_sender = 'tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU'
-
-    # When there is no check if the token id exists, the token owner will be rewritten.
-    # It will become new_sender and the original one will lose the token.
     with pytest.raises(MichelsonRuntimeError) as err:
-        result = contract.list(list_params).interpret(storage=result.storage, sender=new_sender)
-    assert 'The swap already exists' in str(err)
+        result = contract.accept(5).with_amount(10).interpret(storage=result.storage)
+    assert 'The amount passed is less than the token price' in str(err)
 

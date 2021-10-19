@@ -72,24 +72,9 @@ function transfer_token(
 
 } with Tezos.transaction(list[ transfer_params ], 0tez, token_entrypoint);
 
-
-function check_swap_exists(const token_id : nat; const swaps : swaps_ledger) : bool is
-block {
-
-    const swap_option : option(swap_params) =
-        Big_map.find_opt (token_id, swaps);
-
-} with case swap_option of
-    | None -> False
-    | Some(_params) -> True
-    end;
-
 (* Entrypoints implementation: *)
 function list_token(const params : list_params; const store : swap_storage) : return is
 block {
-
-    const swap_exists : bool = check_swap_exists(params.token_id, store.swaps);
-    if (swap_exists) then failwith("The swap already exists") else skip; 
 
     const new_swap = record [
         owner = Tezos.sender;
@@ -148,6 +133,8 @@ function accept(const token_id : nat; const store : swap_storage) : return is
 block {
 
     const accepted_swap : swap_params = get_swap(token_id, store.swaps);
+    if (Tezos.amount = accepted_swap.ask_price) then skip else failwith("The amount passed is less than the token price");
+
     const new_store : swap_storage = record [
         swaps = Big_map.remove (token_id, store.swaps);
         token_address = store.token_address;
