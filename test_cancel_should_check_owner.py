@@ -37,5 +37,5 @@ def test_should_check_amount_when_accept_called():
     contract, result = assert_list_result()
     with pytest.raises(MichelsonRuntimeError) as err:
         result = contract.accept(5).with_amount(10).interpret(storage=result.storage)
-    assert 'The amount passed is less than the token price' in str(err)
+    assert 'The amount passed does not equal the token price' in str(err)
 

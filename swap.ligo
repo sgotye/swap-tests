@@ -133,7 +133,7 @@ function accept(const token_id : nat; const store : swap_storage) : return is
 block {
 
     const accepted_swap : swap_params = get_swap(token_id, store.swaps);
-    if (Tezos.amount = accepted_swap.ask_price) then skip else failwith("The amount passed is less than the token price");
+    if (Tezos.amount = accepted_swap.ask_price) then skip else failwith("The amount passed does not equal the token price");
 
     const new_store : swap_storage = record [
         swaps = Big_map.remove (token_id, store.swaps);
